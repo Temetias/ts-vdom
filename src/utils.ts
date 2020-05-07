@@ -48,3 +48,8 @@ export const killReference =
 	<T>(x: T) => {
 		return JSON.parse(JSON.stringify(x));
 	}
+
+export const flat =
+	<T>(x: T[]) => {
+		return x.flat(Infinity);
+	}

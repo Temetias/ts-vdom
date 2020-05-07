@@ -15,6 +15,14 @@ const map =
 		return io((x: T1) => f(run(x)));
 	}
 
-export default {
-	map,
-}
+const merge =
+	<T1, T2>(...ios: IO<T1, T2>[]) => {
+		return io((x: T1) => {
+			return ios.map(({ run }) => run(x));
+		}) as IO<T1, T2[]>;
+	}
+
+export default
+	{ map
+	, merge
+	}

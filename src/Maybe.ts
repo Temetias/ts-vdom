@@ -1,10 +1,13 @@
 import { isDefined } from "./utils";
 
-type Just<T> = T;
+type Just<T> =
+	T;
 
-type Nothing = undefined;
+type Nothing =
+	undefined;
 
-type Maybe<T> = Just<T> | Nothing;
+type Maybe<T> =
+	Just<T> | Nothing;
 
 const maybe =
 	<T>(x: T | Nothing): Maybe<T> => {
@@ -19,7 +22,7 @@ const map =
 			: maybe(undefined);
 	}
 
-export default {
-	maybe,
-	map,
-}
+export default
+	{ maybe
+	, map
+	}
