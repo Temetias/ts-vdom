@@ -1,8 +1,9 @@
 import { compose2 } from "./utils";
 
-export type IO<T1, T2> = {
-	run: (x: T1) => T2;
-};
+export type IO<T1, T2> =
+	T1 extends void
+		? { run: () => T2 }
+		: { run: (x: T1) => T2 };
 
 export const io =
 	<T1, T2>(f: (x: T1) => T2) => {
@@ -21,6 +22,13 @@ const merge =
 	<T1, T2>(...ios: IO<T1, T2>[]) => {
 		return io((x: T1) => {
 			return ios.map(({ run }) => run(x));
+		});
+	}
+
+const flat =
+	<T1, T2>(ioMonad: IO<T1, IO<T1, T2>>) => {
+		return io((x: T1) => {
+			return ioMonad.run(x).run(x);
 		});
 	}
 
@@ -44,4 +52,5 @@ export default
 	, merge
 	, compose2io
 	, compose3io
+	, flat
 	}

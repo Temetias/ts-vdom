@@ -1,11 +1,13 @@
-import IO, { io } from "./IO";
-import { isString, memoize, killReference } from "./utils";
+import IO, { io, IO as IOtype } from "./IO";
+import { isString, memoize } from "./utils";
 
 type HTMLTag =
 	Parameters<typeof document.createElement>[0];
-	
+
+type HTMLAttribute = string | number | Function;
+
 export type HTMLAttributes =
-	Record<string, string | number | Function>
+	Record<string, HTMLAttribute>
 
 type VDOMChild =
 	VDOMNode | string;
@@ -20,11 +22,12 @@ const h =
 	<T>(tag: HTMLTag) =>
 	(attributes: HTMLAttributes & T) =>
 	(...children: VDOMChild[]) => {
-		return {
-			tag,
-			attributes,
-			children,
-		} as VDOMNode;
+		return (
+			{ tag
+			, attributes
+			, children
+			}
+		) as VDOMNode;
 	}
 
 const renderString =
@@ -35,22 +38,41 @@ const renderString =
 		});
 	}
 
+const addAttribute =
+	(target: HTMLElement) =>
+	(attribute: [string, HTMLAttribute]) => {
+		return io<void, void>(() => {
+			target[attribute[0]] = attribute[1];
+		});
+	}
+
+const addAttributeBundle =
+	(target: HTMLElement) =>
+	(attributeBundle: Record<string, HTMLAttribute>) => {
+		const addToTarget = addAttribute(target);
+		return IO.merge<void, void>(
+			...Object.entries(attributeBundle).map(addToTarget)
+		);
+	}
+
 const renderVDOMNode =
 	(target: HTMLElement) =>
-	(node: VDOMNode) => {
-		return io<void, void>(() => {
-			const el = document.createElement(node.tag, node.attributes);
-			Object.keys(node.attributes).forEach(k => el[k] = node.attributes[k]);
-			node.children.forEach(child => renderVDOMChild(el)(child).run());
-			target.appendChild(el);
-		});
+	(node: VDOMNode): IOtype<void, void> => {
+		const el = document.createElement(node.tag)
+		const attachAttributes = addAttributeBundle(target)(node.attributes);
+		const renderChildren = node.children.map(renderVDOMChild(el));
+		return IO.merge<void, void>(
+			attachAttributes,
+			...renderChildren,
+			io<void, void>(() => target.appendChild(el))
+		);
 	};
 
-const renderVDOMNodes =
+const renderVDOMChildren =
 	(target: HTMLElement) =>
-	(nodes: VDOMNode[]) => {
-		const renderOnTarget = renderVDOMNode(target);
-		return IO.merge(...nodes.map(node => renderOnTarget(node)));
+	(nodes: VDOMChild[]) => {
+		const renderOnTarget = renderVDOMChild(target);
+		return IO.merge<void, void>(...nodes.map(node => renderOnTarget(node)));
 	}
 
 const renderVDOMChild =
@@ -65,7 +87,7 @@ const renderVDOMChild =
 
 export type Component<T> =
 	(props: T) =>
-		VDOMNode[];
+		VDOMChild[];
 
 export type Effect<T1, T2> =
 	(payload: T2) =>
@@ -92,10 +114,11 @@ const registerEffect =
 	(state: T1) =>
 	(reducer: Reducer<T1, T2>) => {
 		return (
+			// Maybe expose the IO.run to user for ability to manually determine update schedule?
 			(payload: T2) => {
 				state = reducer(state)(payload); // IMPURE !
 				root.innerHTML = ""; // IMPURE !
-				renderVDOMNodes(root)(h(state)).run(); // IMPURE !
+				renderVDOMChildren(root)(h(state)).run(); // IMPURE !
 				return state;
 			}
 		);
@@ -105,16 +128,17 @@ const registerApp =
 	(root: HTMLElement) =>
 	<T>(h: Component<T>) =>
 	(initialState: T) => {
+		const state = Object.freeze(initialState);
 		return (
-			{ render: () => renderVDOMNodes(root)(h(initialState)).run()
-			, effectRegistrator: registerEffect(root)(h)(initialState)
+			{ render: renderVDOMChildren(root)(h(state)).run
+			, effectRegistrator: registerEffect(root)(h)(state)
 			}
 		) as App<T>;
 	}
 
-export default {
-	registerComponent,
-	registerApp,
-	registerEffect,
-	h,
-}
+export default
+	{ registerComponent
+	, registerApp
+	, registerEffect
+	, h
+	}

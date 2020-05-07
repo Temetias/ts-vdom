@@ -10,10 +10,10 @@ export const isDefined =
 
 export const memoize =
 	<T1, T2>(f: (x: T1) => T2) => {
-		const memCache = {
-			param: undefined as unknown as T1,
-			result: undefined as unknown as T2,
-		}
+		const memCache =
+			{ param: undefined as unknown as T1
+			, result: undefined as unknown as T2
+			}
 		return (x: T1) => {
 			if (isDefined(memCache.param) && deepEqual(memCache.param)(x)) {
 				console.log("memoized!", memCache.param, memCache.result);
