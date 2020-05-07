@@ -1,4 +1,5 @@
 import VD, { Component } from "../src/DOM";
+import { main, div, p, h1, br, hr, label, button, span } from "../src/HTML";
 
 type MyState =
 	{ stringData: string
@@ -9,9 +10,9 @@ const childComponent: Component<{ numberData: number }> =
 	VD.registerComponent(
 		({ numberData }) => {
 			return [
-				VD.h("span")({})(
+				span({})(
 					`Child component with a prop: ${numberData}`,
-					VD.h("button")({ onclick: () => incrementEffect(1) })("Increment!"),
+					button({ onclick: () => incrementEffect(1) })("Increment!"),
 				)
 			];
 		}
@@ -25,19 +26,19 @@ const initialState =
 const myAppView: Component<MyState> =
 	({ numberData, stringData }: MyState) => {
 		return [
-			VD.h("main")({})(
-				VD.h("h1")({})("Hello World!"),
-				VD.h("p")({})("This is my vdom implementation!"),
-				VD.h("p")({})(`This is some data: ${stringData}`),
-				VD.h("br")({})(),
-				VD.h("hr")({})(),
-				VD.h("label")({})(
+			main({})(
+				h1({})("Hello World!"),
+				p({})("This is my vdom implementation!"),
+				p({})(`This is some data: ${stringData}`),
+				br({}),
+				hr({}),
+				label({})(
 					"This is a button, nested in a label",
-					VD.h("button")({})("A button, but nested!"),
+					button({})("A button, but nested!"),
 				),
-				VD.h("div")({})(
+				div({})(
 					"This is a child component",
-					VD.h("br")({})(),
+					br({}),
 					...childComponent({ numberData }),
 				),
 			)

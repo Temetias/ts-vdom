@@ -4,7 +4,7 @@ import { isString, memoize, killReference } from "./utils";
 type HTMLTag =
 	Parameters<typeof document.createElement>[0];
 	
-type HTMLAttributes =
+export type HTMLAttributes =
 	Record<string, string | number | Function>
 
 type VDOMChild =
