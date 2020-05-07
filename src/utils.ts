@@ -1,10 +1,10 @@
 export const isString =
-	<T>(x: T) => {
+	<T>(x: T | string): x is string => {
 		return typeof x === "string";
 	}
 	
 export const isDefined =
-	<T>(x: T) => {
+	<T>(x: T | undefined): x is T => {
 		return x !== undefined;
 	}
 
@@ -52,4 +52,12 @@ export const killReference =
 export const flat =
 	<T>(x: T[]) => {
 		return x.flat(Infinity);
+	}
+
+export const compose2 =
+	<T1, T2>(f1: (x: T1) => T2) =>
+	<T3>(f2: (x: T3) => T1) => {
+		return (x: T3) => {
+			return f1(f2(x));
+		}
 	}

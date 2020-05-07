@@ -18,7 +18,7 @@ const map =
 	<T1, T2>(f: (inner: T1) => T2) =>
 	(x: Maybe<T1>) => {
 		return isDefined(x)
-			? maybe(f(x!))
+			? maybe(f(x))
 			: maybe(undefined);
 	}
 

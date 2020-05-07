@@ -58,7 +58,7 @@ const increment =
 
 
 const myApp =
-	VD.registerApp<MyState>(root)(myAppView)(initialState);
+	VD.registerApp(root)(myAppView)(initialState);
 
 const incrementEffect =
 	myApp.effectRegistrator(increment);

@@ -57,8 +57,8 @@ const renderVDOMChild =
 	(target: HTMLElement) =>
 	(child: VDOMChild) => {
 		return isString(child)
-			? renderString(target)(child as string)
-			: renderVDOMNode(target)(child as VDOMNode);
+			? renderString(target)(child)
+			: renderVDOMNode(target)(child);
 	}
 
 ///
@@ -102,8 +102,8 @@ const registerEffect =
 	}
 
 const registerApp =
-	<T>(root: HTMLElement) =>
-	(h: Component<T>) =>
+	(root: HTMLElement) =>
+	<T>(h: Component<T>) =>
 	(initialState: T) => {
 		return (
 			{ render: () => renderVDOMNodes(root)(h(initialState)).run()
