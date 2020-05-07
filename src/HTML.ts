@@ -1,23 +1,24 @@
-import DOM, { HTMLAttributes } from "./DOM";
+import API from "./API";
+import { HTMLAttributes } from "./DOM"
 
 /// Child
 
-export const div = DOM.h("div");
-export const h1 = DOM.h("h1");
-export const h2 = DOM.h("h2");
-export const h3 = DOM.h("h3");
-export const h4 = DOM.h("h4");
-export const h5 = DOM.h("h5");
-export const span = DOM.h("span");
-export const p = DOM.h("p");
-export const a = DOM.h("a");
-export const button = DOM.h("button");
-export const label = DOM.h("label");
-export const main = DOM.h("main");
-export const section = DOM.h("section");
+export const div = API.h("div");
+export const h1 = API.h("h1");
+export const h2 = API.h("h2");
+export const h3 = API.h("h3");
+export const h4 = API.h("h4");
+export const h5 = API.h("h5");
+export const span = API.h("span");
+export const p = API.h("p");
+export const a = API.h("a");
+export const button = API.h("button");
+export const label = API.h("label");
+export const main = API.h("main");
+export const section = API.h("section");
 
 /// No child
 
-export const input = (attrs: HTMLAttributes) => DOM.h("input")(attrs)();
-export const br = (attrs: HTMLAttributes) => DOM.h("br")(attrs)();
-export const hr = (attrs: HTMLAttributes) => DOM.h("hr")(attrs)();
+export const input = (attrs: HTMLAttributes) => API.h("input")(attrs)();
+export const br = (attrs: HTMLAttributes) => API.h("br")(attrs)();
+export const hr = (attrs: HTMLAttributes) => API.h("hr")(attrs)();

@@ -1,5 +1,6 @@
-import VD, { Component } from "../src/DOM";
+import VD, { Component } from "../src/API";
 import { main, div, p, h1, br, hr, label, button, span } from "../src/HTML";
+import { VDOMChild } from "../src/DOM";
 
 type MyState =
 	{ stringData: string
@@ -14,6 +15,22 @@ const childComponent: Component<{ numberData: number }> =
 					( div({})(`Child component with a prop: ${numberData}`)
 					, button({ style: "color: red;", onclick: () => incrementEffect(1) })("Increment!")
 					, numberData > 100 ? "IT'S OVER 100!" : ""
+					, br({})
+					, ...childComponentWithSlot({ child: span({})("This is slotted content!") })
+					)
+				]
+			);
+		}
+	);
+
+const childComponentWithSlot: Component<{ child: VDOMChild }> =
+	VD.registerComponent(
+		({ child }) => {
+			return (
+				[ div({})
+					( span({})("This is a component with a slot")
+					, br({})
+					, child
 					)
 				]
 			);
