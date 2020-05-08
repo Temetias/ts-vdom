@@ -3,7 +3,7 @@ import { memoize } from "./utils";
 
 export type Component<T = {}> =
 	(props: T) =>
-		VDOMChild[];
+		VDOMNode;
 
 export type Effect<T1, T2> =
 	(payload: T2) =>
@@ -46,7 +46,7 @@ const registerEffect =
 			(payload: T2) => {
 				state = reducer(state)(payload); // IMPURE !
 				root.innerHTML = ""; // IMPURE !
-				DOM.renderVDOM(root)(h(state)).run(); // IMPURE !
+				DOM.renderVDOMNode(root)(h(state)).run(); // IMPURE !
 				return state;
 			}
 		);
@@ -58,7 +58,7 @@ const registerApp =
 	(initialState: T) => {
 		const state = Object.freeze(initialState);
 		return (
-			{ render: DOM.renderVDOM(root)(h(state)).run
+			{ render: DOM.renderVDOMNode(root)(h(state)).run
 			, effectRegistrator: registerEffect(root)(h)(state)
 			}
 		) as App<T>;

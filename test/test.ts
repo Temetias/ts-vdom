@@ -11,14 +11,13 @@ const childComponent: Component<{ numberData: number }> =
 	VD.registerComponent(
 		({ numberData }) => {
 			return (
-				[ div({})
+				div({})
 					( div({})(`Child component with a prop: ${numberData}`)
 					, button({ style: "color: red;", onclick: () => incrementEffect(1) })("Increment!")
 					, numberData > 100 ? "IT'S OVER 100!" : ""
 					, br({})
-					, ...childComponentWithSlot({ child: span({})("This is slotted content!") })
+					, childComponentWithSlot({ child: span({})("This is slotted content!") })
 					)
-				]
 			);
 		}
 	);
@@ -27,12 +26,11 @@ const childComponentWithSlot: Component<{ child: VDOMChild }> =
 	VD.registerComponent(
 		({ child }) => {
 			return (
-				[ div({})
+				div({})
 					( span({})("This is a component with a slot")
 					, br({})
 					, child
 					)
-				]
 			);
 		}
 	);
@@ -43,27 +41,28 @@ const initialState =
 	}
 
 const myAppView: Component<MyState> =
-	({ numberData, stringData }: MyState) => {
-		return (
-			[ main({})
-				( h1({})("Hello World!")
-				, p({})("This is my vdom implementation!")
-				, p({})(`This is some data: ${stringData}`)
-				, br({})
-				, hr({})
-				, label({})
-					( "This is a button, nested in a label"
-					, button({ onclick: () => incrementEffect(1)})("A button, but nested!")
-					)
-				, div({})
-					( "This is a child component"
+	VD.registerComponent(
+		({ numberData, stringData }: MyState) => {
+			return (
+				main({})
+					( h1({})("Hello World!")
+					, p({})("This is my vdom implementation!")
+					, p({})(`This is some data: ${stringData}`)
 					, br({})
-					, ...childComponent({ numberData })
+					, hr({})
+					, label({})
+						( "This is a button, nested in a label"
+						, button({ onclick: () => incrementEffect(1)})("A button, but nested!")
+						)
+					, div({})
+						( "This is a child component"
+						, br({})
+						, childComponent({ numberData })
+						)
 					)
-				)
-			]
-		);
-	}
+			);
+		}
+	);
 
 const increment =
 	(state: MyState) =>

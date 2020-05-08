@@ -72,5 +72,5 @@ const renderVDOMChild =
 	}
 
 export default
-	{ renderVDOM
+	{ renderVDOMNode
 	}
