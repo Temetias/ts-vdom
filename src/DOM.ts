@@ -47,7 +47,7 @@ const renderVDOMNode =
 	(target: HTMLElement) =>
 	(node: VDOMNode): IOtype<void, void> => {
 		const el = document.createElement(node.tag)
-		const attachAttributes = addAttributeBundle(target)(node.attributes);
+		const attachAttributes = addAttributeBundle(el)(node.attributes);
 		const renderChildren = node.children.map(renderVDOMChild(el));
 		return IO.merge<void, void>(
 			attachAttributes,
