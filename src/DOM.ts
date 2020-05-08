@@ -22,7 +22,7 @@ const renderString =
 	(target: HTMLElement) =>
 	(str: string) => {
 		return io<void, void>(() => {
-			target.innerHTML += str;
+			target.insertAdjacentHTML("beforeend", str);
 		});
 	}
 

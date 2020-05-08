@@ -6,7 +6,7 @@ type Just<T> =
 type Nothing =
 	undefined;
 
-type Maybe<T> =
+export type Maybe<T> =
 	Just<T> | Nothing;
 
 const maybe =
