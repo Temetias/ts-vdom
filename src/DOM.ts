@@ -56,13 +56,6 @@ const renderVDOMNode =
 		);
 	};
 
-const renderVDOM =
-	(target: HTMLElement) =>
-	(nodes: VDOMChild[]) => {
-		const renderOnTarget = renderVDOMChild(target);
-		return IO.merge<void, void>(...nodes.map(node => renderOnTarget(node)));
-	}
-
 const renderVDOMChild =
 	(target: HTMLElement) =>
 	(child: VDOMChild) => {
