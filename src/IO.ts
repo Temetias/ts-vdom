@@ -24,6 +24,14 @@ const merge =
 			return ios.map(({ run }) => run(x));
 		});
 	}
+	
+const chain =
+	<T1, T2>(...ios: IO<T1, T2>[]) => {
+		return io((x: T1) => {
+			return ios.map(({ run }) => run(x))[0];
+		});
+	}
+
 
 const flat =
 	<T1, T2>(ioMonad: IO<T1, IO<T1, T2>>) => {
@@ -53,4 +61,5 @@ export default
 	, compose2io
 	, compose3io
 	, flat
+	, chain
 	}

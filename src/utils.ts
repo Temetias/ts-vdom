@@ -46,7 +46,7 @@ export const deepEqual =
 
 export const killReference =
 	<T>(x: T) => {
-		return JSON.parse(JSON.stringify(x));
+		return JSON.parse(JSON.stringify(x)) as T;
 	}
 
 export const flat =

@@ -1,5 +1,7 @@
 import DOM, { VDOMChild, HTMLTag, HTMLAttributes, VDOMNode } from "./DOM";
-import { memoize } from "./utils";
+import { memoize, killReference } from "./utils";
+import State, { MutationBundle } from "./state";
+import IO from "./IO";
 
 export type Component<T = {}> =
 	(props: T) =>
@@ -15,9 +17,22 @@ type Reducer<T1, T2> =
 		Effect<T1, T2>
 
 type App<T1> =
-	{ render: () => void
+	{ start: () => void
 	, effectRegistrator: <T2>(reducer: Reducer<T1, T2>) => Effect<T1, T2>
 	}
+
+type ApiState<T> =
+	{ appState: T
+	, components: Component<T>[]
+	}
+
+const stateEngineMutations: MutationBundle<ApiState<unknown>> =
+	{ setState: state => <T>(appState: T) => ({ ...state, appState })
+	, registerComponent: state => <T>(component: Component<T>) => ({ ...state, components: [ ...state.components, component ] })
+	}
+
+const stateEngine =
+	State.initializeState<ApiState<unknown>>({ appState: {}, components: [] })(stateEngineMutations);
 
 const h =
 	<T>(tag: HTMLTag) =>
@@ -33,6 +48,7 @@ const h =
 
 const registerComponent =
 	<T>(h: Component<T>) => {
+		stateEngine.dispatch("registerComponent")(h).run();
 		return memoize(h);
 	}
 
@@ -44,9 +60,10 @@ const registerEffect =
 		return (
 			// Maybe expose the IO.run to user for ability to manually determine update schedule?
 			(payload: T2) => {
-				state = reducer(state)(payload); // IMPURE !
+				const computedState = reducer(stateEngine.get.run().appState as T1)(payload) as T1;
+				stateEngine.dispatch("setState")(computedState).run(); // IMPURE !
 				root.innerHTML = ""; // IMPURE !
-				DOM.renderVDOMNode(root)(h(state)).run(); // IMPURE !
+				DOM.renderVDOMNode(root)(h(computedState)).run(); // IMPURE !
 				return state;
 			}
 		);
@@ -56,10 +73,13 @@ const registerApp =
 	(root: HTMLElement) =>
 	<T>(h: Component<T>) =>
 	(initialState: T) => {
-		const state = Object.freeze(initialState);
 		return (
-			{ render: DOM.renderVDOMNode(root)(h(state)).run
-			, effectRegistrator: registerEffect(root)(h)(state)
+			{ start:
+				IO.chain(
+					stateEngine.dispatch("setState")(initialState),
+					DOM.renderVDOMNode(root)(h(initialState))
+				).run
+			, effectRegistrator: registerEffect(root)(h)(initialState)
 			}
 		) as App<T>;
 	}

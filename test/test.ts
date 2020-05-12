@@ -84,4 +84,4 @@ const myApp =
 const incrementEffect =
 	myApp.effectRegistrator(increment);
 
-document.addEventListener("DOMContentLoaded", myApp.render);
+document.addEventListener("DOMContentLoaded", myApp.start);

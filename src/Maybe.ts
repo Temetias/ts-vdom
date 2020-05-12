@@ -9,7 +9,7 @@ type Nothing =
 export type Maybe<T> =
 	Just<T> | Nothing;
 
-const maybe =
+export const maybe =
 	<T>(x: T | Nothing): Maybe<T> => {
 		return x as Maybe<T>;
 	}
