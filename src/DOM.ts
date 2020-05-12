@@ -1,4 +1,4 @@
-import IO, { io, IO as IOtype } from "./IO";
+import IOV2 from "./IOV2";
 import { isString } from "./utils";
 
 export type HTMLTag =
@@ -21,7 +21,7 @@ export type VDOMNode =
 const renderString =
 	(target: HTMLElement) =>
 	(str: string) => {
-		return io<void, void>(() => {
+		return IOV2.io(() => {
 			target.insertAdjacentHTML("beforeend", str);
 		});
 	}
@@ -29,7 +29,7 @@ const renderString =
 const addAttribute =
 	(target: HTMLElement) =>
 	(attribute: [string, HTMLAttribute]) => {
-		return io<void, void>(() => {
+		return IOV2.io(() => {
 			target[attribute[0]] = attribute[1];
 		});
 	}
@@ -38,21 +38,23 @@ const addAttributeBundle =
 	(target: HTMLElement) =>
 	(attributeBundle: Record<string, HTMLAttribute>) => {
 		const addToTarget = addAttribute(target);
-		return IO.merge<void, void>(
+		return IOV2.merge(
 			...Object.entries(attributeBundle).map(addToTarget)
 		);
 	}
 
 const renderVDOMNode =
 	(target: HTMLElement) =>
-	(node: VDOMNode): IOtype<void, void> => {
+	(node: VDOMNode) => {
 		const el = document.createElement(node.tag)
 		const attachAttributes = addAttributeBundle(el)(node.attributes);
 		const renderChildren = node.children.map(renderVDOMChild(el));
-		return IO.merge<void, void>(
+		return IOV2.merge(
 			attachAttributes,
 			...renderChildren,
-			io<void, void>(() => target.appendChild(el))
+			IOV2.io<void>(() => {
+				target.appendChild(el)
+			})
 		);
 	};
 

@@ -54,9 +54,9 @@ const registerComponent =
 
 const registerEffect =
 	(root: HTMLElement) =>
-	<T1, T2>(h: Component<T1>) =>
+	<T1>(h: Component<T1>) =>
 	(state: T1) =>
-	(reducer: Reducer<T1, T2>) => {
+	<T2>(reducer: Reducer<T1, T2>) => {
 		return (
 			// Maybe expose the IO.run to user for ability to manually determine update schedule?
 			(payload: T2) => {
